@@ -1,0 +1,33 @@
+<h2>Блог</h2>
+
+<?php echo $data['msg'];?>
+
+<?php if($messages = $data['items']): ?>
+	<?php foreach ($messages as $message): ?>
+        <div class="message">
+			<?php if($data['isAdmin']): ?>
+                <div class="admin">
+                    <a href="/mvc/blog/delete/?id=<?php echo $message->getId();?>">delete</a>
+                </div>
+			<?php endif; ?>
+            <span class="date"><?php echo $message->getCreatedAt();?> </span>
+            <br>
+            Автор: <?php echo $message->getAuthorName($message->getAuthorId());?>
+
+            <div class="text"><?php echo htmlspecialchars(nl2br($message->getText()));?></div>
+			<?php if($message->getImage()):?>
+                <div><img src="/mvc/images/<?php echo $message->getImage();?>" style="width: 150px;"></div>
+			<?php endif;?>
+        </div>
+        <br><br>
+	<?php endforeach; ?>
+<?php else: ?>
+    Сообщений пока нет
+<?php endif; ?>
+
+<h3>Добавить сообщение</h3>
+<form enctype="multipart/form-data" action="/mvc/blog/" method="post">
+    <textarea style="width: 250px; height: 150px;" type="text" value="" name="text"></textarea><br><br>
+    Изображение: <input type="file" name="image"><br>
+    <input type="submit" value="Отправить">
+</form>
