@@ -7,13 +7,12 @@ use Base\AbstractController;
 
 class Blog extends AbstractController  {
 
-	private $data = [];
-	private $check = true;
-
 	public function indexAction() {
 
-		$this->data['msg'] = '';
-		$this->data['items'] = '';
+		$check = true;
+
+		$data['msg'] = '';
+		$data['items'] = '';
 
 		if( ! $this->getUserId() ){
 			$this->redirect('login');
@@ -21,8 +20,8 @@ class Blog extends AbstractController  {
 
 		$messages = Message::getList();
 		if ($messages) {
-			$this->data['items'] = $messages;
-			$this->data['isAdmin'] = User::isAdmin($this->getUserId());
+			$data['items'] = $messages;
+			$data['isAdmin'] = User::isAdmin($this->getUserId());
 		}
 
 		if ( isset( $_POST['text'] ) ) {
@@ -30,8 +29,8 @@ class Blog extends AbstractController  {
 			$text = htmlspecialchars( $_POST['text'] );
 
 			if ( ! $text ) {
-				$this->data['msg'] = 'Сообщение не может быть пустым';
-				$this->check = false;
+				$data['msg'] = 'Сообщение не может быть пустым';
+				$check = false;
 			}
 
 			$message = new Message([
@@ -44,13 +43,13 @@ class Blog extends AbstractController  {
 				$message->loadFile($_FILES['image']['tmp_name']);
 			}
 
-			if( $this->check ) {
+			if( $check ) {
 				$message->save();
 				$this->redirect('blog');
 			}
 		}
 
-		return $this->render('Blog/index.phtml', $this->data);
+		return $this->render( 'Blog/index.phtml', $data );
 	}
 
 	public function deleteAction() {

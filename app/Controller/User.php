@@ -6,11 +6,10 @@ use Base\AbstractController;
 
 class User extends AbstractController {
 
-	private $msg = '';
-	private $check = true;
-	private $auth = true;
+	public function loginAction() {
 
-    public function loginAction() {
+		$auth = true;
+		$text = '';
 
 		if( $this->getUserId() ){
 			$this->redirect('blog');
@@ -20,28 +19,31 @@ class User extends AbstractController {
 			$email = htmlspecialchars( $_POST['email'] );
 			$password = htmlspecialchars( $_POST['password'] );
 
-			$user = UserModel::getByEmail($email);
+			$user = UserModel::getByEmail( $email );
 
 			if ( ! $user ) {
-				$this->msg = 'Неверный логин и пароль';
-				$this->auth = false;
+				$text = 'Неверный логин и пароль';
+				$auth = false;
 			}
 			
 			if( $user->getPassword() !== UserModel::getPasswordHash( $password ) ){
-				$this->msg = 'Неверный логин и пароль';
-				$this->auth = false;
+				$text = 'Неверный логин и пароль';
+				$auth = false;
 			}
 
-			if($this->auth) {
-				$this->authUser($user->getId());
+			if( $auth ) {
+				$this->authUser( $user->getId() );
 			}
 
 		}
 
-		return $this->render( 'User/login.phtml', $this->msg );
+		return $this->render( 'User/login.phtml', $text );
     }
 
 	public function registerAction() {
+
+		$reg = true;
+		$text = '';
 
 		if( $this->getUserId() ){
 			$this->redirect('blog');
@@ -55,23 +57,23 @@ class User extends AbstractController {
 			$password2 = htmlspecialchars( $_POST['password2'] );
 
 			if ( ! $name && ! $email && ! $password1 && ! $password2 ) {
-				$this->msg = 'Все поля обязательны!';
-				$this->check = false;
+				$text = 'Все поля обязательны!';
+				$reg = false;
 			}
 
 			$user = UserModel::getByEmail($email);
 
 			if ( $user ) {
-				$this->msg = 'Такой пользователь уже существует!';
-				$this->check = false;
+				$text = 'Такой пользователь уже существует!';
+				$reg = false;
 			}
 
 			if ( $password1 !== $password2 ) {
-				$this->msg = 'Пароли не совпадают!';
-				$this->check = false;
+				$text = 'Пароли не совпадают!';
+				$reg = false;
 			}
 
-			if( $this->check ){
+			if( $reg ){
 				$user = new UserModel();
 				$user->setName($name);
 				$user->setEmail($email);
@@ -88,7 +90,7 @@ class User extends AbstractController {
 
 		}
 
-		return $this->render('User/register.phtml', $this->msg);
+		return $this->render('User/register.phtml', $text );
 	}
 
 	public function logoutAction() {
