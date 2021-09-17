@@ -1,8 +1,6 @@
 <?php
 namespace Base;
 
-use App\Controller\User;
-
 class Application {
 	private $route;
 	private $controller;
@@ -30,6 +28,9 @@ class Application {
 		$this->route->addRoute('blog','Blog', 'indexAction');
 		$this->route->addRoute('blog/twig','Blog', 'twigAction');
 		$this->route->addRoute('blog/delete','Blog', 'deleteAction');
+		$this->route->addRoute('admin','Admin', 'indexAction');
+		$this->route->addRoute('admin/edit','Admin', 'editAction');
+		$this->route->addRoute('admin/delete','Admin', 'deleteAction');
 		$this->route->addRoute('api','Api', 'getUserMessagesAction');
 	}
 
@@ -44,6 +45,7 @@ class Application {
 
 	private function initAction(){
 		$actionName = $this->route->getActionName();
+
 
 		if ( method_exists( $this->controller, $actionName ) ) {
 			$this->content = $this->controller->{$actionName}();

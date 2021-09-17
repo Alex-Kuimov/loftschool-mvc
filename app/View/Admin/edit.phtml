@@ -1,0 +1,15 @@
+<h2>Редактирование пользователя</h2>
+
+<?php echo $data['msg'];?>
+
+<form action="/mvc/admin/edit?id=<?php echo $data['user']->getId();?>" method="post">
+	Имя: <input type="text" name="name" value="<?php echo $data['user']->getName();?>"> <br>
+	<input type="submit" value="Сохранить">
+</form>
+
+<h3>Новый пароль</h3>
+<form action="/mvc/admin/edit?id=<?php echo $data['user']->getId();?>" method="post">
+	Пароль1: <input type="password" name="password1"> <br>
+	Пароль2: <input type="password" name="password2"> <br>
+	<input type="submit" value="Сохранить">
+</form>

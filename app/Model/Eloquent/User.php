@@ -68,4 +68,12 @@ class User extends Model {
 	public static function isAdmin( $user_id ) {
 		return in_array($user_id, ADMIN_IDS);
 	}
+
+	public static function deleteUser( $userId ) {
+		return self::destroy($userId);
+	}
+
+	public static function updateUserName( $userId, $name ) {
+		return self::query()->where('id', '=', $userId)->update(['name'=>$name]);
+	}
 }
