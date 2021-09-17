@@ -4,8 +4,10 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 
 use Base\Application;
-include '../base/config.php';
-include '../vendor/autoload.php';
+require '../vendor/autoload.php';
+require '../base/config.php';
+require '../base/eloquent.php';
+
 
 $app = new Application();
 $app->run();

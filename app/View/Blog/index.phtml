@@ -12,8 +12,7 @@
 			<?php endif; ?>
             <span class="date"><?php echo $message->getCreatedAt();?> </span>
             <br>
-            Автор: <?php echo $message->getAuthorName($message->getAuthorId());?>
-
+            Автор: <?php echo $data['user']['name'];?>
             <div class="text"><?php echo htmlspecialchars(nl2br($message->getText()));?></div>
 			<?php if($message->getImage()):?>
                 <div><img src="/mvc/images/<?php echo $message->getImage();?>" style="width: 150px;"></div>
