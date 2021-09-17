@@ -28,6 +28,7 @@ class Application {
 		$this->route->addRoute('register','User', 'registerAction');
 		$this->route->addRoute('profile','User', 'profileAction');
 		$this->route->addRoute('blog','Blog', 'indexAction');
+		$this->route->addRoute('blog/twig','Blog', 'twigAction');
 		$this->route->addRoute('blog/delete','Blog', 'deleteAction');
 		$this->route->addRoute('api','Api', 'getUserMessagesAction');
 	}

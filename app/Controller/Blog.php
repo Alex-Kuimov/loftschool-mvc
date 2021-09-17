@@ -52,6 +52,13 @@ class Blog extends AbstractController  {
 		return $this->render( 'Blog/index.phtml', $data );
 	}
 
+	public function twigAction() {
+
+		$data['msg'] = 'Hello Twig';
+
+		return $this->renderTwig( 'Blog/test.twig', $data );
+	}
+
 	public function deleteAction() {
 		if( isset( $_GET['id'] ) && User::isAdmin( $this->getUserId() ) ){
 			$messageID = htmlspecialchars( $_GET['id'] );
