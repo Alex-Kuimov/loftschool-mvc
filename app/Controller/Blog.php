@@ -1,8 +1,8 @@
 <?php
 namespace App\Controller;
 
-use App\Model\Message;
-use App\Model\User;
+use App\Model\Eloquent\Message;
+use App\Model\Eloquent\User;
 use Base\AbstractController;
 
 class Blog extends AbstractController  {
@@ -18,10 +18,11 @@ class Blog extends AbstractController  {
 			$this->redirect('login');
 		}
 
-		$messages = Message::getList();
+		$messages = Message::getList( $this->getUserId() );
 		if ($messages) {
 			$data['items'] = $messages;
-			$data['isAdmin'] = User::isAdmin($this->getUserId());
+			$data['user'] = User::getNameByID( $this->getUserId() );
+			$data['isAdmin'] = User::isAdmin( $this->getUserId() );
 		}
 
 		if ( isset( $_POST['text'] ) ) {

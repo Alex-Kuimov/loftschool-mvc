@@ -1,0 +1,30 @@
+<h2>Пользователи</h2>
+
+<?php echo $data['msg'];?>
+
+<?php if($users = $data['users']): ?>
+	<?php foreach ($users as $user): ?>
+        <div class="user">
+			<?php if($data['isAdmin']): ?>
+                <div class="admin">
+                    <a href="/mvc/admin/edit/?id=<?php echo $user->getId();?>">edit</a>
+                    <a href="/mvc/admin/delete/?id=<?php echo $user->getId();?>">delete</a>
+                </div>
+			<?php endif; ?>
+
+            <?php echo $user->getName();?>
+        </div>
+        <br><br>
+	<?php endforeach; ?>
+<?php else: ?>
+    Пользователей пока нет
+<?php endif; ?>
+
+<h3>Добавить нового пользователя</h3>
+<form action="/mvc/admin/" method="post">
+    Имя: <input type="text" name="name"> <br>
+    E-mail: <input type="text" name="email"> <br>
+    Пароль1: <input type="password" name="password1"> <br>
+    Пароль2: <input type="password" name="password2"> <br>
+    <input type="submit" value="Добавить">
+</form>

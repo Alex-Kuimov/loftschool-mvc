@@ -1,7 +1,7 @@
 <?php
 namespace App\Controller;
 
-use App\Model\User as UserModel;
+use App\Model\Eloquent\User as UserModel;
 use Base\AbstractController;
 
 class User extends AbstractController {
@@ -33,6 +33,7 @@ class User extends AbstractController {
 
 			if( $auth ) {
 				$this->authUser( $user->getId() );
+				$this->redirect('blog');
 			}
 
 		}

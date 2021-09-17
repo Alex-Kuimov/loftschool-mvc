@@ -1,7 +1,7 @@
 <?php
 namespace App\Controller;
 
-use App\Model\Message;
+use App\Model\Eloquent\Message;
 use Base\AbstractController;
 
 class Api extends AbstractController {
