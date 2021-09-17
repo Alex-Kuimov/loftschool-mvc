@@ -1,4 +1,4 @@
-<h2>Редактирование пользователя</h2>
+<h2>Редактирование пользователя <?php echo $data['user']->getName();?> (<?php echo $data['user']->getEmail();?>)</h2>
 
 <?php echo $data['msg'];?>
 
@@ -13,3 +13,5 @@
 	Пароль2: <input type="password" name="password2"> <br>
 	<input type="submit" value="Сохранить">
 </form>
+
+<a href="/mvc/admin/">Админка</a>

@@ -15,6 +15,10 @@ class Admin extends AbstractController{
 			$this->redirect('login');
 		}
 
+		if( ! User::isAdmin( $this->getUserId() ) ) {
+			$this->redirect('blog');
+		}
+
 		$users = User::getList();
 		if ( $users ) {
 			$data['users'] = $users;
@@ -70,24 +74,52 @@ class Admin extends AbstractController{
 			$this->redirect('login');
 		}
 
+		if( ! User::isAdmin( $this->getUserId() ) ) {
+			$this->redirect('blog');
+		}
+
 		if( isset( $_GET['id'] ) ) {
 			$userId = htmlspecialchars( $_GET['id'] );
 
 			if ( isset( $_POST['name'] ) ) {
 				$name = htmlspecialchars( $_POST['name'] );
 
-				$save = true;
+				$update = true;
 
 				if ( ! $name ) {
 					$data['msg'] = 'Имя обязательное поле!';
-					$save = false;
+					$update = false;
 				}
 
-				if ( $save ) {
-					$data['msg'] = 'Данные обновлены!';
+				if ( $update ) {
 					User::updateUserName( $userId, $name );
+					$data['msg'] = 'Данные обновлены!';
 				}
 			}
+
+			if ( isset( $_POST['password1'] ) && isset( $_POST['password2'] ) ) {
+				$password1 = htmlspecialchars( $_POST['password1'] );
+				$password2 = htmlspecialchars( $_POST['password2'] );
+
+				$update = true;
+
+				if ( empty( $password1 ) && empty( $password2 ) ) {
+					$data['msg'] = 'Пароль не может быть пустым!';
+					$update = false;
+				}
+
+				if ( $password1 !== $password2 ) {
+					$data['msg'] = 'Пароли не совпадают!';
+					$update = false;
+				}
+
+				if ( $update ) {
+					$password = User::getPasswordHash( $password1 );
+					User::updatePassword( $userId, $password );
+					$data['msg'] = 'Пароль обновлен!';
+				}
+			}
+
 
 			$user = User::getById( $userId );
 

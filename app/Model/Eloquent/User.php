@@ -74,6 +74,10 @@ class User extends Model {
 	}
 
 	public static function updateUserName( $userId, $name ) {
-		return self::query()->where('id', '=', $userId)->update(['name'=>$name]);
+		return self::query()->where('id', '=', $userId)->update( ['name' => $name] );
+	}
+
+	public static function updatePassword( $userId, $password ) {
+		return self::query()->where('id', '=', $userId)->update( ['password' => $password] );
 	}
 }
