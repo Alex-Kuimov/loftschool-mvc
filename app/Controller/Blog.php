@@ -4,6 +4,9 @@ namespace App\Controller;
 use App\Model\Eloquent\Message;
 use App\Model\Eloquent\User;
 use Base\AbstractController;
+use Base\Request;
+use Base\TwigView;
+use Base\View;
 
 class Blog extends AbstractController  {
 
@@ -25,15 +28,14 @@ class Blog extends AbstractController  {
 			$data['isAdmin'] = User::isAdmin( $this->getUserId() );
 		}
 
-		if ( isset( $_POST['text'] ) ) {
+		$text = Request::post('text');
 
-			$text = htmlspecialchars( $_POST['text'] );
+		if ( ! $text && $text !== null ) {
+			$data['msg'] = 'Сообщение не может быть пустым';
+			$check = false;
+		}
 
-			if ( ! $text ) {
-				$data['msg'] = 'Сообщение не может быть пустым';
-				$check = false;
-			}
-
+		if ( $text && $check ) {
 			$message = new Message([
 				'text' => $text,
 				'author_id' => $this->getUserId(),
@@ -44,24 +46,22 @@ class Blog extends AbstractController  {
 				$message->loadFile($_FILES['image']['tmp_name']);
 			}
 
-			if( $check ) {
-				$message->save();
-				$this->redirect('blog');
-			}
+			$message->save();
+			$this->redirect('blog');
 		}
 
-		return $this->render( 'Blog/index.phtml', $data );
+		return View::render( 'Blog/index.phtml', $data );
 	}
 
 	public function twigAction() {
-
 		$data['msg'] = 'Hello Twig';
-
-		return $this->renderTwig( 'Blog/test.twig', $data );
+		return TwigView::render( 'Blog/test.twig', $data );
 	}
 
 	public function deleteAction() {
-		if( isset( $_GET['id'] ) && User::isAdmin( $this->getUserId() ) ){
+		$id = Request::get('id');
+
+		if( $id && User::isAdmin( $this->getUserId() ) ){
 			$messageID = htmlspecialchars( $_GET['id'] );
 			Message::deleteMessage($messageID);
 			$this->redirect('blog');

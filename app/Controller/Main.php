@@ -2,9 +2,10 @@
 namespace App\Controller;
 
 use Base\AbstractController;
+use Base\View;
 
 class Main extends AbstractController  {
 	public function indexAction() {
-		return $this->render('Main/index.phtml');
+		return View::render('Main/index.phtml');
 	}
 }

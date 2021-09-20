@@ -4,6 +4,8 @@ namespace App\Controller;
 
 use Base\AbstractController;
 use App\Model\Eloquent\User;
+use Base\Request;
+use Base\View;
 
 class Admin extends AbstractController{
 	public function indexAction() {
@@ -25,11 +27,12 @@ class Admin extends AbstractController{
 			$data['isAdmin'] = User::isAdmin( $this->getUserId() );
 		}
 
-		if ( isset( $_POST['name'] ) && isset( $_POST['email'] ) && isset( $_POST['password1'] ) && isset( $_POST['password2'] )) {
-			$name = htmlspecialchars( $_POST['name'] );
-			$email = htmlspecialchars( $_POST['email'] );
-			$password1 = htmlspecialchars( $_POST['password1'] );
-			$password2 = htmlspecialchars( $_POST['password2'] );
+		$name = Request::post('name');
+		$email = Request::post('email');
+		$password1 = Request::post('password1');
+		$password2 = Request::post('password2');
+
+		if ( $name !== null && $email !== null && $password1 !== null && $password2 !== null ) {
 			$reg = true;
 
 			if ( ! $name && ! $email && ! $password1 && ! $password2 ) {
@@ -37,15 +40,18 @@ class Admin extends AbstractController{
 				$reg = false;
 			}
 
-			$user = User::getByEmail($email);
-
-			if ( $user ) {
-				$data['msg'] = 'Такой пользователь уже существует!';
+			if ( $password1 !== $password2 ) {
+				$data['msg'] = 'Пароли не совпадают!';
 				$reg = false;
 			}
 
-			if ( $password1 !== $password2 ) {
-				$data['msg'] = 'Пароли не совпадают!';
+			if( strlen( $password1 ) < 4 && strlen( $password2 ) < 4) {
+				$data['msg'] = 'Минимальная длина пароля 4 символа';
+				$reg = false;
+			}
+
+			if( $email && User::getByEmail( $email ) ){
+				$data['msg'] = 'Такой пользователь уже существует!';
 				$reg = false;
 			}
 
@@ -58,12 +64,11 @@ class Admin extends AbstractController{
 				$user->setPassword($password);
 
 				$user->save();
-
 				$this->redirect('admin');
 			}
 		}
 
-		return $this->render( 'Admin/index.phtml', $data );
+		return View::render( 'Admin/index.phtml', $data );
 	}
 
 	public function editAction() {
@@ -78,49 +83,45 @@ class Admin extends AbstractController{
 			$this->redirect('blog');
 		}
 
-		if( isset( $_GET['id'] ) ) {
-			$userId = htmlspecialchars( $_GET['id'] );
+		$userId = Request::get('id');
 
-			if ( isset( $_POST['name'] ) ) {
-				$name = htmlspecialchars( $_POST['name'] );
+		if ( $userId ) {
+			$name = Request::post('name');
+			$password1 = Request::post('password1');
+			$password2 = Request::post('password2');
+			$update = true;
 
-				$update = true;
+			if( $name !== null || ( $password1 !== null && $password2 !== null ) ) {
+				if ( $name ) {
+					if ( strlen( $name ) < 0 ) {
+						$data['msg'] = 'Имя обязательное поле!';
+						$update = false;
+					}
 
-				if ( ! $name ) {
-					$data['msg'] = 'Имя обязательное поле!';
-					$update = false;
+					if ( $update ) {
+						User::updateUserName( $userId, $name );
+						$data['msg'] = 'Данные обновлены!';
+					}
 				}
 
-				if ( $update ) {
-					User::updateUserName( $userId, $name );
-					$data['msg'] = 'Данные обновлены!';
-				}
-			}
+				if ( $password1 && $password2 ) {
+					if ( $password1 !== $password2 ) {
+						$data['msg'] = 'Пароли не совпадают!';
+						$update = false;
+					}
 
-			if ( isset( $_POST['password1'] ) && isset( $_POST['password2'] ) ) {
-				$password1 = htmlspecialchars( $_POST['password1'] );
-				$password2 = htmlspecialchars( $_POST['password2'] );
+					if ( strlen( $password1 ) < 4 && strlen( $password2 ) < 4 ) {
+						$data['msg'] = 'Минимальная длина пароля 4 символа';
+						$update = false;
+					}
 
-				$update = true;
-
-				if ( empty( $password1 ) && empty( $password2 ) ) {
-					$data['msg'] = 'Пароль не может быть пустым!';
-					$update = false;
-				}
-
-				if ( $password1 !== $password2 ) {
-					$data['msg'] = 'Пароли не совпадают!';
-					$update = false;
-				}
-
-				if ( $update ) {
-					$password = User::getPasswordHash( $password1 );
-					User::updatePassword( $userId, $password );
-					$data['msg'] = 'Пароль обновлен!';
+					if ( $update ) {
+						$password = User::getPasswordHash( $password1 );
+						User::updatePassword( $userId, $password );
+						$data['msg'] = 'Пароль обновлен!';
+					}
 				}
 			}
-
-
 			$user = User::getById( $userId );
 
 			if ( $user ) {
@@ -129,11 +130,13 @@ class Admin extends AbstractController{
 
 		}
 
-		return $this->render( 'Admin/edit.phtml', $data );
+		return View::render( 'Admin/edit.phtml', $data );
 	}
 
 	public function deleteAction() {
-		if( isset( $_GET['id'] ) && User::isAdmin( $this->getUserId() ) ){
+		$id = Request::get('id');
+
+		if( $id && User::isAdmin( $this->getUserId() ) ){
 			$userId = htmlspecialchars( $_GET['id'] );
 			User::deleteUser( $userId );
 			$this->redirect('admin');

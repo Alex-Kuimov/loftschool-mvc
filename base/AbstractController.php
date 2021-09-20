@@ -1,8 +1,7 @@
 <?php
 namespace Base;
 
-
-class AbstractController extends View {
+class AbstractController {
 
 	public function authUser(int $id) {
 		$_SESSION['user_id'] = $id;

@@ -3,6 +3,8 @@ namespace App\Controller;
 
 use App\Model\Eloquent\User as UserModel;
 use Base\AbstractController;
+use Base\Request;
+use Base\View;
 
 class User extends AbstractController {
 
@@ -15,10 +17,10 @@ class User extends AbstractController {
 			$this->redirect('blog');
 		}
 
-		if ( isset( $_POST['email'] ) && isset( $_POST['password'] ) ) {
-			$email = htmlspecialchars( $_POST['email'] );
-			$password = htmlspecialchars( $_POST['password'] );
+		$email = Request::post('email');
+		$password = Request::post('password');
 
+		if ( $email && $password ) {
 			$user = UserModel::getByEmail( $email );
 
 			if ( ! $user ) {
@@ -38,7 +40,7 @@ class User extends AbstractController {
 
 		}
 
-		return $this->render( 'User/login.phtml', $text );
+		return View::render( 'User/login.phtml', $text );
     }
 
 	public function registerAction() {
@@ -50,27 +52,30 @@ class User extends AbstractController {
 			$this->redirect('blog');
 		}
 
-		if ( isset( $_POST['name'] ) && isset( $_POST['email'] ) && isset( $_POST['password1'] ) && isset( $_POST['password2'] )) {
+		$name = Request::post('name');
+		$email = Request::post('email');
+		$password1 = Request::post('password1');
+		$password2 = Request::post('password2');
 
-			$name = htmlspecialchars( $_POST['name'] );
-			$email = htmlspecialchars( $_POST['email'] );
-			$password1 = htmlspecialchars( $_POST['password1'] );
-			$password2 = htmlspecialchars( $_POST['password2'] );
+		if ( $name !== null && $email !== null && $password1 !== null && $password2 !== null ) {
 
 			if ( ! $name && ! $email && ! $password1 && ! $password2 ) {
 				$text = 'Все поля обязательны!';
 				$reg = false;
 			}
 
-			$user = UserModel::getByEmail($email);
-
-			if ( $user ) {
-				$text = 'Такой пользователь уже существует!';
+			if ( $password1 !== $password2  ) {
+				$text = 'Пароли не совпадают!';
 				$reg = false;
 			}
 
-			if ( $password1 !== $password2 ) {
-				$text = 'Пароли не совпадают!';
+			if( strlen( $password1 ) < 4 && strlen( $password2 ) < 4) {
+				$text = 'Минимальная длина пароля 4 символа';
+				$reg = false;
+			}
+
+			if( $email && UserModel::getByEmail( $email ) ){
+				$text = 'Такой пользователь уже существует!';
 				$reg = false;
 			}
 
@@ -83,15 +88,13 @@ class User extends AbstractController {
 				$user->setPassword($password);
 
 				$user->save();
-
 				$this->authUser( $user->getId() );
-
 				$this->redirect('blog');
 			}
 
 		}
 
-		return $this->render('User/register.phtml', $text );
+		return View::render('User/register.phtml', $text );
 	}
 
 	public function logoutAction() {

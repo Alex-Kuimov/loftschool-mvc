@@ -3,27 +3,28 @@ namespace App\Controller;
 
 use App\Model\Eloquent\Message;
 use Base\AbstractController;
+use Base\Request;
 
 class Api extends AbstractController {
     public function getUserMessagesAction() {
 
-        $userId = (int) $_GET['user_id'] ?? 0;
+		$userId = Request::get('id');
 
-        if (!$userId) {
-            return $this->response(['error' => 'no_user_id']);
+        if ( ! $userId ) {
+            return $this->response( ['error' => 'no_user_id'] );
         }
 
-        $messages = Message::getUserMessages($userId, 20);
+        $messages = Message::getUserMessages( $userId, 20 );
 
 		if (!$messages) {
-            return $this->response(['error' => 'no_messages']);
+            return $this->response( ['error' => 'no_messages'] );
         }
 
-        $data = array_map(function (Message $message) {
+        $data = array_map(function ( Message $message ) {
             return $message->getData();
         }, $messages);
 
-        return $this->response(['messages' => $data]);
+        return $this->response( ['messages' => $data] );
     }
 
     public function response( $data ) {
