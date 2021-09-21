@@ -9,11 +9,11 @@ class Request {
 
 		foreach ( $_POST as $key => $value ) {
 			if ( $name === $key ) {
-				$find = htmlspecialchars( $value );
+				return htmlspecialchars( $value );
 			}
 		}
 
-		return ! empty( $find ) ? $find : false;
+		return false;
 	}
 
 	public static function get( $name ) {
@@ -23,10 +23,10 @@ class Request {
 
 		foreach ( $_GET as $key => $value ) {
 			if ( $name === $key ) {
-				$find = htmlspecialchars( $value );
+				return htmlspecialchars( $value );
 			}
 		}
 
-		return ! empty( $find ) ? $find : false;
+		return false;
 	}
 }
